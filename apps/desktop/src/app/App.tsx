@@ -29,6 +29,11 @@ export default function App() {
   const m = useAppModel();
   const { t } = useContext(LocaleContext);
 
+  // (role: schedule view week start (Monday), type: string (YYYY-MM-DD))
+  const scheduleWeekStartYmd = useMemo(() => {
+    return toYmd(startOfWeekMonday(m.today));
+  }, [m.today]);
+
   if (!m.hydrated) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-zinc-950 text-sm text-zinc-400">
@@ -36,11 +41,6 @@ export default function App() {
       </div>
     );
   }
-
-  // (role: schedule view week start (Monday), type: string (YYYY-MM-DD))
-  const scheduleWeekStartYmd = useMemo(() => {
-    return toYmd(startOfWeekMonday(m.today));
-  }, [m.today]);
 
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100">
