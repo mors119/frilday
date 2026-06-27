@@ -1,5 +1,5 @@
 import { useContext, useMemo } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -119,9 +119,9 @@ export function TaskForm({ onCreate }: TaskFormProps) {
   );
 
   const {
+    control,
     register,
     handleSubmit,
-    watch,
     setValue,
     reset,
     formState: { errors, isSubmitting, isValid },
@@ -139,8 +139,8 @@ export function TaskForm({ onCreate }: TaskFormProps) {
     mode: 'onChange',
   });
 
-  const category = watch('category');
-  const customDays = watch('customDays') ?? [];
+  const category = useWatch({ control, name: 'category' });
+  const customDays = useWatch({ control, name: 'customDays' }) ?? [];
 
   const canSubmit = useMemo(() => {
     if (!isValid) return false;
