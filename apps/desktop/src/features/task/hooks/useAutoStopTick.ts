@@ -1,8 +1,10 @@
 import { useEffect } from 'react';
 import { useDailyCheckStore } from '../../../app/store/useDailyCheckStore';
 import { useLocale } from '../../../i18n/useLocale';
-import { sendTimerDoneNotification } from '../../../infrastructure/notification';
-import { getSetting } from '../../../infrastructure/tauri/store';
+import {
+  platformNotifications,
+  platformSettings,
+} from '../../../infrastructure/platform';
 
 const TIMER_DONE_NOTIFY_KEY = 'settings.notifications.timerDone';
 
@@ -20,14 +22,14 @@ export function useAutoStopTick() {
       if (finishedTaskTitles.length === 0) return;
 
       void (async () => {
-        const notifyEnabled = await getSetting<boolean>(
+        const notifyEnabled = await platformSettings.get<boolean>(
           TIMER_DONE_NOTIFY_KEY,
           true,
         );
         if (!notifyEnabled) return;
 
         for (const taskTitle of finishedTaskTitles) {
-          await sendTimerDoneNotification({
+          await platformNotifications.sendTimerDone({
             title: t('notify.timerDone.title'),
             body: t('notify.timerDone.body', { task: taskTitle }),
           });
