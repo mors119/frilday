@@ -1,8 +1,10 @@
 import { useContext, useEffect, useState } from 'react';
 import type { Locale } from '../../i18n';
 import { LocaleContext } from '../../i18n/context';
-import { getSetting, setSetting } from '../../infrastructure/tauri/store';
-import { requestNotifyPermission } from '../../infrastructure/notification';
+import {
+  platformNotifications,
+  platformSettings,
+} from '../../infrastructure/platform';
 
 const TIMER_DONE_NOTIFY_KEY = 'settings.notifications.timerDone';
 
@@ -15,7 +17,10 @@ export function SettingsPage() {
     let active = true;
 
     void (async () => {
-      const saved = await getSetting<boolean>(TIMER_DONE_NOTIFY_KEY, true);
+      const saved = await platformSettings.get<boolean>(
+        TIMER_DONE_NOTIFY_KEY,
+        true,
+      );
       if (!active) return;
       setTimerDoneEnabled(Boolean(saved));
     })();
@@ -38,20 +43,20 @@ export function SettingsPage() {
     if (!next) {
       setPermissionHint('');
       setTimerDoneEnabled(false);
-      await setSetting(TIMER_DONE_NOTIFY_KEY, false);
+      await platformSettings.set(TIMER_DONE_NOTIFY_KEY, false);
       return;
     }
 
-    const permission = await requestNotifyPermission();
+    const permission = await platformNotifications.requestPermission();
     if (permission === 'granted') {
       setPermissionHint('');
       setTimerDoneEnabled(true);
-      await setSetting(TIMER_DONE_NOTIFY_KEY, true);
+      await platformSettings.set(TIMER_DONE_NOTIFY_KEY, true);
       return;
     }
 
     setTimerDoneEnabled(false);
-    await setSetting(TIMER_DONE_NOTIFY_KEY, false);
+    await platformSettings.set(TIMER_DONE_NOTIFY_KEY, false);
     setPermissionHint(t('settings.notifications.timerDone.hintDenied'));
   };
 

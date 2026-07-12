@@ -3,29 +3,10 @@ import { createRoot } from 'react-dom/client';
 import './styles/index.css';
 import App from './app/App.tsx';
 import { LocaleProvider } from './i18n/provider.tsx';
-import { appDb } from './infrastructure/tauri/db';
-import { isTauri } from './infrastructure/tauri/runtime';
+import { initializePlatform } from './infrastructure/platform';
 import { useDailyCheckStore } from './app/store/useDailyCheckStore';
 
-type BootState = {
-  ready: boolean;
-};
-
-function formatError(error: unknown): string {
-  if (error instanceof Error) {
-    return error.stack || error.message;
-  }
-
-  if (typeof error === 'string') {
-    return error;
-  }
-
-  try {
-    return JSON.stringify(error);
-  } catch {
-    return 'Unknown initialization error';
-  }
-}
+type BootState = { ready: boolean };
 
 class RootErrorBoundary extends Component<
   { children: ReactNode },
@@ -66,22 +47,20 @@ function BootstrapApp() {
     let alive = true;
 
     void (async () => {
-      if (isTauri()) {
-        try {
-          await appDb.init();
-        } catch (error) {
-          const detail = formatError(error);
-          console.error('App DB initialization failed', error);
-          useDailyCheckStore.setState({
-            errorMsg: `DB initialization failed. ${detail}`,
-          });
-        }
+      const platformError = await initializePlatform();
+      if (platformError) {
+        useDailyCheckStore.setState({ errorMsg: platformError });
       }
 
       try {
         await useDailyCheckStore.getState().hydrate();
       } catch (error) {
-        const detail = formatError(error);
+        const detail =
+          error instanceof Error
+            ? error.stack || error.message
+            : typeof error === 'string'
+              ? error
+              : 'Unknown initialization error';
         console.error('App bootstrap failed', error);
         useDailyCheckStore.setState({
           hydrated: true,

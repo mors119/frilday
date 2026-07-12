@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import type { Locale } from './messages';
 import { LocaleContext } from './context';
 import { translate } from './translate';
-import { getSetting, setSetting } from '../infrastructure/tauri/store';
+import { platformSettings } from '../infrastructure/platform';
 
 // (role: safe locale parser, type: (unknown)=>Locale)
 function parseLocale(value: unknown): Locale {
@@ -20,7 +20,7 @@ export function LocaleProvider(props: {
     let alive = true;
 
     void (async () => {
-      const next = parseLocale(await getSetting<Locale>('locale', 'en'));
+      const next = parseLocale(await platformSettings.get<Locale>('locale', 'en'));
       if (alive) {
         setLocaleState(next);
         setLocaleLoaded(true);
@@ -40,7 +40,7 @@ export function LocaleProvider(props: {
   useEffect(() => {
     if (!localeLoaded) return;
 
-    void setSetting('locale', locale).catch(() => {
+    void platformSettings.set('locale', locale).catch(() => {
       // ignore persistence failure
     });
   }, [locale, localeLoaded]);
