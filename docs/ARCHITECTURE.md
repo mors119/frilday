@@ -1,13 +1,13 @@
 # FrilDay Architecture
 
-FrilDay is designed as a cloud-first productivity application, while the first release focuses on the desktop experience.
+FrilDay is a timer-first time planning application. Its core loop is Plan → Execute → Track → Review → Adjust, with planned time and actual tracked time as separate concepts.
 
-The project starts with a Tauri desktop app and an Axum server, then gradually expands to mobile and cloud synchronization.
+The first release focuses on a local desktop experience. Cloud and multi-platform adapters can be added later without making the desktop runtime depend on a local HTTP server.
 
 ## Goals
 
 - Release the desktop app first
-- Use Axum as the API layer
+- Use Axum as the future server API adapter
 - Keep business logic independent from UI and transport layers
 - Prepare for future mobile and cloud-first usage
 - Avoid duplicating task, schedule, and statistics logic across clients
@@ -30,16 +30,16 @@ crates/
 ### Desktop v0.1
 
 ```text
-React Desktop
-    ↓ HTTP
-Local Axum Server
+React UI
+    ↓
+Tauri / application adapter
     ↓
 frilday-core
     ↓
-SQLite
+SQLite adapter
 ```
 
-The desktop app calls the local Axum server through HTTP. This keeps the desktop client close to the future cloud API structure.
+The desktop runtime must not start or call a local Axum HTTP server. Tauri is the application boundary for the local adapter.
 
 ### Future Cloud Version
 
@@ -64,10 +64,10 @@ Responsible for:
 - React UI
 - Tauri shell
 - Pages and user interaction
-- Calling the API
+- Calling the Tauri/application adapter
 - Desktop packaging
 
-It should not contain core business rules.
+It should not contain core business rules or SQLite-specific details.
 
 ### apps/server
 
@@ -117,14 +117,14 @@ apps/server  ─┘
 2. Create `apps/server`
 3. Create `crates/frilday-core`
 4. Move domain logic into `frilday-core`
-5. Add basic Axum routes:
+5. Add basic Axum routes for the separate server adapter:
    - `GET /health`
    - `GET /tasks`
    - `POST /tasks`
 
-6. Make the desktop app call the local Axum server
+6. Keep the desktop app on its Tauri/application adapter
 7. Use SQLite for the first desktop release
-8. Later replace or extend storage with PostgreSQL for cloud-first usage
+8. Later connect remote clients through Axum and PostgreSQL
 
 ## Design Principle
 

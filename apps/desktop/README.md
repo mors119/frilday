@@ -41,10 +41,10 @@ bunx tauri build
 
 macOS bundle output:
 
-- `src-tauri/target/release/bundle/macos/dailycheck.app`
+- `src-tauri/target/release/bundle/macos/FrilDay.app`
 
 ## Notes
 
 - this app is the active product surface right now
 - server and shared core extraction are planned at the repo level
-- broader direction is documented in [../../docs/ARCHITECTURE.md](/Users/mars112/code/project/frilday/docs/ARCHITECTURE.md)
+- broader direction is documented in [../../docs/ARCHITECTURE.md](../../docs/ARCHITECTURE.md)

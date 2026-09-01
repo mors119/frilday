@@ -1,6 +1,6 @@
 # FrilDay
 
-FrilDay is a productivity app centered on planned time, completion, and repeatable routines.
+FrilDay is a timer-first time planning app centered on planned time, actual tracked time, completion, and repeatable routines.
 
 The repository is being organized as a monorepo with a desktop-first release path and a longer-term cloud architecture.
 
@@ -21,9 +21,9 @@ docs/
 ## Current Status
 
 - `apps/desktop` is the active application
-- `apps/server` exists as a bootstrap crate
+- `apps/server` exists as a separate server-adapter bootstrap crate
 - `crates/frilday-core` exists as a bootstrap crate
-- architecture direction is documented in [docs/ARCHITECTURE.md](/Users/mars112/code/project/frilday/docs/ARCHITECTURE.md)
+- architecture direction is documented in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
 
 ## Desktop App
 
@@ -37,7 +37,7 @@ bunx tauri build
 
 Local packaged app output:
 
-- `apps/desktop/src-tauri/target/release/bundle/macos/dailycheck.app`
+- `apps/desktop/src-tauri/target/release/bundle/macos/FrilDay.app`
 
 ## Workflow
 
@@ -46,4 +46,4 @@ Local packaged app output:
 - prefer small PRs by layer
 - avoid committing generated outputs
 
-More detail lives in [docs/ARCHITECTURE.md](/Users/mars112/code/project/frilday/docs/ARCHITECTURE.md).
+More detail lives in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
